@@ -1,4 +1,5 @@
 from pydantic import Field
+
 from app.schemas.clasificacion_ia.base import ClasificacionIABase
 
 

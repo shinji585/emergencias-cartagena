@@ -1,12 +1,15 @@
-from typing import Generic, TypeVar, Type, Any, Sequence
+from collections.abc import Sequence
+from typing import Any, Generic, TypeVar
+
 from sqlalchemy.orm import Session
+
 from app.db.config import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 
 
 class BaseRepository(Generic[ModelType]):
-    def __init__(self, model: Type[ModelType], db: Session):
+    def __init__(self, model: type[ModelType], db: Session):
         self.model = model
         self.db = db
 

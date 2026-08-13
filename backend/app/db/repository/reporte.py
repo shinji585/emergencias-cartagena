@@ -1,5 +1,7 @@
-from typing import Sequence
+from collections.abc import Sequence
+
 from sqlalchemy.orm import Session
+
 from app.db.repository.base import BaseRepository
 from app.models.reporte import ReporteModel
 
@@ -19,7 +21,9 @@ class ReporteRepository(BaseRepository[ReporteModel]):
     def get_cola_operador(self) -> Sequence[ReporteModel]:
         return (
             self.db.query(ReporteModel)
-            .filter(ReporteModel.estado != "resuelto", ReporteModel.estado != "descartado")
+            .filter(
+                ReporteModel.estado != "resuelto", ReporteModel.estado != "descartado"
+            )
             .order_by(ReporteModel.created_at.asc())
             .all()
         )

@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
+
+from app.core.logging.logger import logger
 from app.db.repository.usuario import UsuarioRepository
 from app.schemas.usuario.create import UsuarioCreate
 from app.schemas.usuario.internal import UsuarioInternal
 from app.schemas.usuario.public import UsuarioPublic
-from app.core.logging.logger import logger
 
 
 class UsuarioService:

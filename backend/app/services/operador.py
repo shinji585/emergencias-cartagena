@@ -1,9 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from sqlalchemy.orm import Session
-from app.db.repository.reporte import ReporteRepository
-from app.schemas.reporte.public import ReportePublic
-from app.schemas.enums import EstadoReporte, Severidad
+
 from app.core.logging.logger import logger
+from app.db.repository.reporte import ReporteRepository
+from app.schemas.enums import EstadoReporte, Severidad
+from app.schemas.reporte.public import ReportePublic
 
 
 class OperadorService:
@@ -12,21 +14,21 @@ class OperadorService:
 
     def obtener_cola_priorizada(self) -> list[dict]:
         reportes_db = self.reporte_repo.get_cola_operador()
-        ahora = datetime.now(timezone.utc)
+        ahora = datetime.now(UTC)
         lista_priorizada = []
 
         severidad_pesos = {
             Severidad.GRAVE.value: 300,
             Severidad.MODERADO.value: 200,
-            Severidad.LEVE.value: 100
+            Severidad.LEVE.value: 100,
         }
 
         for rep in reportes_db:
             created_at = rep.created_at
             if created_at.tzinfo is None:
-                created_at = created_at.replace(tzinfo=timezone.utc)
+                created_at = created_at.replace(tzinfo=UTC)
             minutos_espera = max(0.0, (ahora - created_at).total_seconds() / 60.0)
-            
+
             peso_base = severidad_pesos.get(rep.severidad, 100)
             score_prioridad = peso_base + (minutos_espera * 5.0)
 
@@ -38,7 +40,9 @@ class OperadorService:
         lista_priorizada.sort(key=lambda x: x["score_prioridad"], reverse=True)
         return lista_priorizada
 
-    def actualizar_estado(self, reporte_id: str, nuevo_estado: EstadoReporte) -> ReportePublic | None:
+    def actualizar_estado(
+        self, reporte_id: str, nuevo_estado: EstadoReporte
+    ) -> ReportePublic | None:
         reporte = self.reporte_repo.get_by_id(reporte_id)
         if not reporte:
             return None
@@ -51,7 +55,7 @@ class OperadorService:
         todos = self.reporte_repo.get_all(limit=1000)
         totales = len(todos)
         por_estado = {e.value: 0 for e in EstadoReporte}
-        por_organismo = {}
+        por_organismo: dict = {}
 
         for r in todos:
             por_estado[r.estado] = por_estado.get(r.estado, 0) + 1

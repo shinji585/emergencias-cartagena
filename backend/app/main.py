@@ -1,14 +1,31 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.config import Base, engine
-from app.models import UsuarioModel, ReporteModel, ClasificacionIAModel  # noqa: F401
-from app.routers import health_router, usuario_router, reporte_router, operador_router
+from fastapi.responses import HTMLResponse
+from scalar_fastapi import get_scalar_api_reference
+
 from app.core.logging.logger import logger
+from app.db.config import Base, engine
+from app.models import ClasificacionIAModel, ReporteModel, UsuarioModel  # noqa: F401
+from app.routers import health_router, operador_router, reporte_router, usuario_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Iniciando API y creando tablas de base de datos si no existen...")
+    Base.metadata.create_all(bind=engine)
+    logger.info("Tablas inicializadas correctamente.")
+    yield
+    # Shutdown
+
 
 app = FastAPI(
     title="API Sistema de Emergencias Cartagena",
     description="Backend para el reporte de emergencias con trazabilidad legal e IA (Ollama)",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -25,8 +42,7 @@ app.include_router(reporte_router)
 app.include_router(operador_router)
 
 
-@app.on_event("startup")
-def startup_event():
-    logger.info("Iniciando API y creando tablas de base de datos si no existen...")
-    Base.metadata.create_all(bind=engine)
-    logger.info("Tablas inicializadas correctamente.")
+
+@app.get("/scalar", include_in_schema=False)
+async def scalar_html() -> HTMLResponse:
+    return get_scalar_api_reference(openapi_url=app.openapi_url, title="Tracked product Documentation Scalar")
