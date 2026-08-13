@@ -7,6 +7,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: emergencias_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d emergencias_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
     ports:
       - "5432:5432"
     volumes:
@@ -22,9 +27,15 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/emergencias_db
+      # IA Models - Local Ollama Server (running on WSL host)
       - OLLAMA_URL=http://host.docker.internal:11434
+      - OLLAMA_TEXT_MODEL=llama3.2:3b
+      - OLLAMA_VISION_MODEL=gemma3:4b
+      # Logging
+      - LOG_LEVEL=INFO
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - ./backend/logs:/app/logs

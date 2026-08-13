@@ -17,6 +17,7 @@ class ReporteModel(Base):
     ubicacion_lat: Mapped[float] = mapped_column(Float, nullable=False)
     ubicacion_lng: Mapped[float] = mapped_column(Float, nullable=False)
     foto_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
     severidad: Mapped[str] = mapped_column(String(20), default="moderado")
     estado: Mapped[str] = mapped_column(String(20), default="pendiente")
     organismo: Mapped[str] = mapped_column(String(30), nullable=False)
