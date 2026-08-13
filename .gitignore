@@ -1,0 +1,35 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Logs
+*.log
+backend/logs/
+
+# Database / Storage
+*.sqlite
+*.sqlite3
+
+# Node / Expo / React Native
+node_modules/
+.expo/
+dist/
+web-build/
+*.pfx
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local

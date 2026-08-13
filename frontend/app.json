@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Emergencias Cartagena",
+    "slug": "emergencias-cartagena",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F172A"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permite a Emergencias Cartagena capturar tu ubicación GPS exacta al reportar un incidente."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite a Emergencias Cartagena tomar fotos como evidencia visual del incidente."
+        }
+      ]
+    ]
+  }
+}
