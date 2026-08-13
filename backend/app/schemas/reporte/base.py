@@ -12,6 +12,9 @@ class ReporteBase(BaseModel):
     foto_url: str | None = Field(
         default=None, description="URL o base64 de la foto capturada"
     )
+    descripcion: str | None = Field(
+        default=None, description="Descripción detallada de la emergencia"
+    )
     organismo: Organismo = Field(
         ..., description="Organismo asignado para atender la emergencia"
     )

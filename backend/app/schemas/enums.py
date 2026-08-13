@@ -6,6 +6,7 @@ class TipoEmergencia(str, Enum):
     ROBO_INSEGURIDAD = "robo_inseguridad"
     EMERGENCIA_MEDICA = "emergencia_medica"
     INCIDENTE_TRANSITO = "incidente_transito"
+    EMERGENCIA_INDUSTRIAL = "emergencia_industrial"
 
 
 class Severidad(str, Enum):
