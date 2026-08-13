@@ -61,7 +61,8 @@ class OrchestratorAgent:
     ) -> str:
         """Llamada genérica al modelo Ollama local"""
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            logger.info(f"🔗 Conectando a Ollama: {self.ollama_url}/api/generate (modelo: {self.model_name})")
+            async with httpx.AsyncClient(timeout=300.0) as client:
                 payload = {
                     "model": self.model_name,
                     "prompt": prompt,
@@ -70,11 +71,16 @@ class OrchestratorAgent:
                     "temperature": temperature,
                 }
                 res = await client.post(f"{self.ollama_url}/api/generate", json=payload)
+                logger.info(f"📡 Ollama respondió con status {res.status_code}")
                 if res.status_code == 200:
                     data = res.json()
-                    return data.get("response", "").strip()
+                    response_text = data.get("response", "").strip()
+                    logger.info(f"✅ LLM response: {response_text[:100]}")
+                    return response_text
+                else:
+                    logger.error(f"❌ Ollama error: {res.status_code} - {res.text}")
         except Exception as exc:
-            logger.warning(f"LLM call failed ({exc}), using fallback")
+            logger.error(f"❌ LLM call failed: {type(exc).__name__}: {exc}")
         return ""
 
     def _detect_hazmat_risk(self, descripcion: str) -> bool:

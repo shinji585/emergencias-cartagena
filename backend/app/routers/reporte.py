@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/v1/reportes", tags=["Reportes"])
 
 @router.post("", response_model=ReportePublic, status_code=status.HTTP_201_CREATED)
 async def crear_reporte(
-    payload: ReporteCreate, service:  Annotated[ ReporteService,Depends(get_reporte_service)]
+    payload: ReporteCreate, service:  Annotated[ReporteService,Depends(get_reporte_service)]
 ):
     """
     Crea un nuevo reporte de emergencia.

@@ -41,7 +41,8 @@ class VisionAgent:
     ) -> dict[str, str | float | bool]:
         """Análisis de imagen con modelo local Gemma3"""
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            logger.info(f"📸 Iniciando análisis de imagen con {self.model_name}")
+            async with httpx.AsyncClient(timeout=300.0) as client:
                 prompt = (
                     f"Eres un experto en análisis de emergencias. "
                     f"Analiza esta imagen de una emergencia de tipo '{tipo.value.replace('_', ' ')}'.\n"
@@ -63,13 +64,16 @@ class VisionAgent:
                 if foto_url and (foto_url.startswith("data:image") or len(foto_url) > 100):
                     payload["images"] = [foto_url]
 
+                logger.info(f"🔗 Enviando request a {self.ollama_url}/api/generate")
                 response = await client.post(
                     f"{self.ollama_url}/api/generate", json=payload
                 )
 
+                logger.info(f"📡 Respuesta status: {response.status_code}")
                 if response.status_code == 200:
                     data = response.json()
                     response_text = data.get("response", "").strip()
+                    logger.info("✅ Análisis de imagen completado")
 
                     # Intentar parsear JSON de la respuesta
                     try:
@@ -96,9 +100,11 @@ class VisionAgent:
                             }
                     except json.JSONDecodeError:
                         logger.debug("Could not parse JSON from LLM response, using fallback")
+                else:
+                    logger.error(f"❌ Ollama error: {response.status_code} - {response.text}")
 
         except Exception as exc:
-            logger.warning(f"Image analysis timeout/error ({exc})")
+            logger.error(f"❌ Image analysis error: {type(exc).__name__}: {exc}")
 
         return self._rule_based_analysis(tipo, descripcion)
 

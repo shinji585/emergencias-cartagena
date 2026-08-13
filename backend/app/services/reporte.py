@@ -118,6 +118,7 @@ class ReporteService:
             ubicacion_lat=payload.ubicacion_lat,
             ubicacion_lng=payload.ubicacion_lng,
             foto_url=payload.foto_url,
+            descripcion=payload.descripcion,
             organismo=payload.organismo,
             usuario_id=usuario_id,
             severidad=severidad_enum,
