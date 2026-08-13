@@ -38,7 +38,9 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
-      - ./backend/logs:/app/logs
+      - /app/.venv
+      - backend_logs:/app/logs
 
 volumes:
   postgres_data:
+  backend_logs:

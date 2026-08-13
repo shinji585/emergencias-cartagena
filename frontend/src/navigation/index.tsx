@@ -16,6 +16,7 @@ export const AppNavigator: React.FC = () => {
     fotoUrl: string | null;
     nombre: string;
     telefono: string;
+    descripcion?: string | null;
   } | null>(null);
 
   const handleSeleccionarTipo = (opcion: OpciónEmergencia) => {
@@ -29,6 +30,7 @@ export const AppNavigator: React.FC = () => {
     fotoUrl: string | null;
     nombre: string;
     telefono: string;
+    descripcion?: string | null;
   }) => {
     setDatosFormulario(datos);
     setPantallaActual('CONFIRMAR');

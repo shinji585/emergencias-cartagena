@@ -11,6 +11,7 @@ export interface ReporteCreatePayload {
   ubicacion_lat: number;
   ubicacion_lng: number;
   foto_url?: string | null;
+  descripcion?: string | null;
   organismo: Organismo;
   usuario_id?: string | null;
   usuario_nombre?: string | null;
@@ -32,3 +33,7 @@ export interface ReporteResponse {
   created_at: string;
   updated_at?: string | null;
 }
+
+// Compatibilidad con nombres usados en servicios
+export type ReporteCreate = ReporteCreatePayload;
+export type ReportePublic = ReporteResponse;

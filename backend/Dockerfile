@@ -7,6 +7,8 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Set UV_LINK_MODE to avoid filesystem warnings
 ENV UV_LINK_MODE=copy
 
+RUN mkdir -p /app/logs && chmod 0777 /app/logs
+
 COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen --no-install-project

@@ -3,21 +3,29 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'reac
 import { OpciónEmergencia } from '../../constants/tiposEmergencia';
 import { useUbicacion } from '../../hooks/useUbicacion';
 import { MapaUbicacion } from '../../components/MapaUbicacion';
+import CamaraModal from '../../components/CamaraModal';
 
 interface Props {
   opcion: OpciónEmergencia;
   onAtras: () => void;
-  onSiguiente: (datos: { lat: number; lng: number; fotoUrl: string | null; nombre: string; telefono: string }) => void;
+  onSiguiente: (datos: { lat: number; lng: number; fotoUrl: string | null; nombre: string; telefono: string; descripcion?: string | null }) => void;
 }
 
 export const CapturarUbicacionYFotoScreen: React.FC<Props> = ({ opcion, onAtras, onSiguiente }) => {
   const ubicacion = useUbicacion();
   const [fotoSimulada, setFotoSimulada] = useState<string | null>(null);
+  const [abrirCamara, setAbrirCamara] = useState(false);
   const [nombre, setNombre] = useState<string>('');
   const [telefono, setTelefono] = useState<string>('');
+  const [descripcion, setDescripcion] = useState<string>('');
 
   const handleTomarFotoMock = () => {
-    setFotoSimulada('data:image/jpeg;base64,evidencia_fotografica_mock_cartagena');
+    // abrir la cámara real
+    setAbrirCamara(true);
+  };
+
+  const handleFotoTomada = (dataUri: string) => {
+    setFotoSimulada(dataUri);
     Alert.alert('Foto capturada', 'Evidencia fotográfica adjuntada correctamente.');
   };
 
@@ -33,6 +41,7 @@ export const CapturarUbicacionYFotoScreen: React.FC<Props> = ({ opcion, onAtras,
       fotoUrl: fotoSimulada,
       nombre: nombre.trim() || 'Ciudadano Cartagena',
       telefono: telefono.trim(),
+      descripcion: descripcion.trim() || null,
     });
   };
 
@@ -53,6 +62,7 @@ export const CapturarUbicacionYFotoScreen: React.FC<Props> = ({ opcion, onAtras,
             {fotoSimulada ? '✓ Foto Adjuntada (Tocar para cambiar)' : '📸 Tomar Foto del Lugar'}
           </Text>
         </TouchableOpacity>
+        <CamaraModal visible={abrirCamara} onClose={() => setAbrirCamara(false)} onFotoTomada={handleFotoTomada} />
       </View>
 
       <View style={styles.userBox}>
@@ -71,6 +81,14 @@ export const CapturarUbicacionYFotoScreen: React.FC<Props> = ({ opcion, onAtras,
           keyboardType="phone-pad"
           value={telefono}
           onChangeText={setTelefono}
+        />
+        <TextInput
+          style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
+          placeholder="Descripción del incidente (qué pasó, daños, lugares, personas...)"
+          placeholderTextColor="#64748B"
+          multiline
+          value={descripcion}
+          onChangeText={setDescripcion}
         />
       </View>
 
