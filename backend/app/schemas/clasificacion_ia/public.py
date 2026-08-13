@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from pydantic import ConfigDict, Field
+
 from app.schemas.clasificacion_ia.base import ClasificacionIABase
 
 

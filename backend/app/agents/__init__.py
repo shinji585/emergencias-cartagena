@@ -1,4 +1,4 @@
-from app.agents.vision import VisionAgent
 from app.agents.orchestrator import OrchestratorAgent
+from app.agents.vision import VisionAgent
 
-__all__ = ["VisionAgent", "OrchestratorAgent"]
+__all__ = ["OrchestratorAgent", "VisionAgent"]

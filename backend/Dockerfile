@@ -1,23 +1,18 @@
-FROM python:3.11-slim
+FROM python:3.14-slim 
 
 WORKDIR /app
 
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Set UV_LINK_MODE to avoid filesystem warnings
+ENV UV_LINK_MODE=copy
 
-RUN pip install --no-cache-dir uv
+COPY pyproject.toml uv.lock ./
 
-COPY pyproject.toml uv.lock* ./
-
-RUN uv pip install --system --no-cache -r <(uv pip compile pyproject.toml 2>/dev/null || echo "fastapi uvicorn sqlalchemy psycopg2-binary pydantic pydantic-settings httpx python-multipart") || pip install --no-cache-dir fastapi uvicorn sqlalchemy psycopg2-binary pydantic pydantic-settings httpx python-multipart
+RUN uv sync --frozen --no-install-project
 
 COPY . .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]

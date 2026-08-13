@@ -1,12 +1,16 @@
 import os
+
 import httpx
+
 from app.core.logging.logger import logger
-from app.schemas.enums import TipoEmergencia, Severidad
+from app.schemas.enums import Severidad, TipoEmergencia
 
 
 class OrchestratorAgent:
     def __init__(self, ollama_url: str | None = None, model_name: str | None = None):
-        self.ollama_url = ollama_url or os.getenv("OLLAMA_URL", "http://localhost:11434")
+        self.ollama_url = ollama_url or os.getenv(
+            "OLLAMA_URL", "http://localhost:11434"
+        )
         self.model_name = model_name or os.getenv("OLLAMA_TEXT_MODEL", "llama3.2")
 
     async def generate_summary_and_grouping(
@@ -15,7 +19,7 @@ class OrchestratorAgent:
         severidad: Severidad,
         lat: float,
         lng: float,
-        existentes: list[dict]
+        existentes: list[dict],
     ) -> dict[str, str | None]:
         resumen_fallback = (
             f"Reporte de {tipo.value.replace('_', ' ').title()} "
@@ -26,7 +30,11 @@ class OrchestratorAgent:
         for exp in existentes:
             dist_lat = abs(exp.get("ubicacion_lat", 0.0) - lat)
             dist_lng = abs(exp.get("ubicacion_lng", 0.0) - lng)
-            if dist_lat < 0.005 and dist_lng < 0.005 and exp.get("tipo_emergencia") == tipo.value:
+            if (
+                dist_lat < 0.005
+                and dist_lng < 0.005
+                and exp.get("tipo_emergencia") == tipo.value
+            ):
                 grupo_id = exp.get("grupo_incidente_id") or exp.get("id")
                 resumen_fallback += f" (Posible duplicado del incidente {grupo_id[:8]})"
                 break
@@ -49,9 +57,8 @@ class OrchestratorAgent:
                     if resumen_ollama:
                         resumen_fallback = resumen_ollama
         except Exception as exc:
-            logger.info(f"Ollama text model offline or timeout ({exc}), using deterministic summary")
+            logger.info(
+                f"Ollama text model offline or timeout ({exc}), using deterministic summary"
+            )
 
-        return {
-            "resumen_ia": resumen_fallback,
-            "grupo_incidente_id": grupo_id
-        }
+        return {"resumen_ia": resumen_fallback, "grupo_incidente_id": grupo_id}

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.db.repository.base import BaseRepository
 from app.models.clasificacion_ia import ClasificacionIAModel
 

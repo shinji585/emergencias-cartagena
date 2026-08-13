@@ -1,18 +1,20 @@
 import os
+
 import httpx
+
 from app.core.logging.logger import logger
 from app.schemas.enums import Severidad, TipoEmergencia
 
 
 class VisionAgent:
     def __init__(self, ollama_url: str | None = None, model_name: str | None = None):
-        self.ollama_url = ollama_url or os.getenv("OLLAMA_URL", "http://localhost:11434")
+        self.ollama_url = ollama_url or os.getenv(
+            "OLLAMA_URL", "http://localhost:11434"
+        )
         self.model_name = model_name or os.getenv("OLLAMA_VISION_MODEL", "llava")
 
     async def analyze_image(
-        self,
-        tipo: TipoEmergencia,
-        foto_url: str | None
+        self, tipo: TipoEmergencia, foto_url: str | None
     ) -> dict[str, str | float | bool]:
         if not foto_url:
             logger.info("No photo provided, defaulting to moderado severity")
@@ -34,13 +36,21 @@ class VisionAgent:
                     "model": self.model_name,
                     "prompt": prompt,
                     "stream": False,
-                    "images": [foto_url] if foto_url.startswith("data:image") or len(foto_url) > 100 else []
+                    "images": [foto_url]
+                    if foto_url.startswith("data:image") or len(foto_url) > 100
+                    else [],
                 }
-                response = await client.post(f"{self.ollama_url}/api/generate", json=payload)
+                response = await client.post(
+                    f"{self.ollama_url}/api/generate", json=payload
+                )
                 if response.status_code == 200:
-                    logger.info(f"Ollama vision response received successfully: {response.status_code}")
+                    logger.info(
+                        f"Ollama vision response received successfully: {response.status_code}"
+                    )
         except Exception as exc:
-            logger.warning(f"Ollama vision model call failed or offline ({exc}), using rule-based analysis")
+            logger.warning(
+                f"Ollama vision model call failed or offline ({exc}), using rule-based analysis"
+            )
 
         severidad_map = {
             TipoEmergencia.ACCIDENTE: Severidad.GRAVE,
